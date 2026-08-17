@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+    
+    {% if dry_run %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
+        <p class="font-bold">Dry Run Mode Enabled</p>
+        <p>Emails will be logged but not actually sent through Gmail.</p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-gray-500 text-sm uppercase">Total Buyers Found</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ summary.total_buyers }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-gray-500 text-sm uppercase">Business Emails</h3>
+            <p class="text-3xl font-bold text-green-600">{{ summary.business_classified }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-gray-500 text-sm uppercase">Individual Emails</h3>
+            <p class="text-3xl font-bold text-orange-600">{{ summary.individual_classified }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-gray-500 text-sm uppercase">Total Sent</h3>
+            <p class="text-3xl font-bold text-indigo-600">{{ summary.success_count }}</p>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-bold mb-4">Pipeline Workflow</h2>
+        <div class="flex space-x-4">
+            <a href="/upload" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">1. Discover Leads</a>
+            <a href="/classify" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">2. Classify Emails</a>
+            <a href="/send" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">3. Send Campaign</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
