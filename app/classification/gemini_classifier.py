@@ -30,29 +30,48 @@ class GeminiClassifier(BaseClassifier):
             return []
         try:
             prompt = (
-                "Classify each of the following email addresses into exactly 'BUSINESS' or 'INDIVIDUAL'.\n"
-                "Return each line as: email,LABEL\n\n" + "\n".join(batch)
+                "You are a strict data classification API. Classify each of the following email addresses into exactly 'BUSINESS' or 'INDIVIDUAL'.\n"
+                "Do NOT output markdown. Do NOT output a conversational intro. Output ONLY raw text.\n"
+                "Return each line strictly as: email,LABEL\n\n" + "\n".join(batch)
             )
             resp = requests.post(
                 "https://api.openai.com/v1/chat/completions",
                 headers={"Authorization": f"Bearer {self.openai_key}"},
                 json={
                     "model": "gpt-4o-mini",
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [{"role": "system", "content": "You are a machine that strictly outputs CSV format without markdown."}, {"role": "user", "content": prompt}],
                     "temperature": 0.0
                 },
-                timeout=10
+                timeout=15
             )
             if resp.status_code == 200:
                 content = resp.json()["choices"][0]["message"]["content"]
+                logging.info(f"OpenAI raw response: {content}")
+                
+                # Clean up markdown formatting if ChatGPT still added it
+                content = content.replace("```csv", "").replace("```text", "").replace("```", "").strip()
+                
                 results = []
-                for line in content.strip().split("\n"):
+                for line in content.split("\n"):
+                    line = line.strip()
+                    if not line or "," not in line:
+                        continue
                     parts = line.split(",")
-                    if len(parts) == 2:
-                        results.append((parts[0].strip(), parts[1].strip().upper()))
+                    if len(parts) >= 2:
+                        email_part = parts[0].strip()
+                        label_part = parts[1].strip().upper()
+                        if "BUSINESS" in label_part:
+                            label_part = "BUSINESS"
+                        elif "INDIVIDUAL" in label_part:
+                            label_part = "INDIVIDUAL"
+                        else:
+                            label_part = "UNKNOWN"
+                        results.append((email_part, label_part))
                 return results
+            else:
+                logging.warning(f"OpenAI error response: {resp.status_code} - {resp.text}")
         except Exception as e:
-            logging.warning(f"OpenAI classification error: {e}")
+            logging.warning(f"OpenAI classification exception: {e}")
         return []
 
     def _classify_with_gemini(self, batch: List[str]) -> List[Tuple[str, str]]:
