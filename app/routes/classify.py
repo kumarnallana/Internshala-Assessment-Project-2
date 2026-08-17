@@ -10,11 +10,11 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/classify", response_class=HTMLResponse)
 def classify_page(request: Request):
-    return templates.TemplateResponse("classify.html", {"request": request})
+    return templates.TemplateResponse(request, "classify.html", {"request": request})
 
 @router.post("/classify")
 def run_classification():
     pipeline = PipelineService(keyword=SEARCH_KEYWORD)
     classifier = GeminiClassifier()
-    b, i = pipeline.run_classification(classifier)
+    b, i, u = pipeline.run_classification(classifier)
     return RedirectResponse(url="/?msg=classification_complete", status_code=303)

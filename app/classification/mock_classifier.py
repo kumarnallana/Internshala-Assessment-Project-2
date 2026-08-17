@@ -3,7 +3,7 @@ from app.classification.base import BaseClassifier
 import logging
 
 class MockClassifier(BaseClassifier):
-    def classify_emails(self, emails: List[str]) -> Tuple[List[str], List[str]]:
+    def classify_emails(self, emails: List[str]) -> Tuple[List[str], List[str], List[str]]:
         """
         Mock implementation.
         In this mock, emails containing 'business', 'sales', 'info', or 'corp' are BUSINESS.
@@ -27,4 +27,4 @@ class MockClassifier(BaseClassifier):
             else:
                 individual_emails.append(email)
                 
-        return business_emails, individual_emails
+        return business_emails, individual_emails, []

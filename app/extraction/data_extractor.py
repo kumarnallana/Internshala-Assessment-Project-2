@@ -13,8 +13,8 @@ def extract_emails_from_text(text: str) -> List[str]:
     valid_candidates = []
     
     for e in candidates:
-        e = e.strip().lower()
-        if e.endswith(IMAGE_EXTENSIONS):
+        e = e.strip().lower().rstrip('.')
+        if e.endswith(IMAGE_EXTENSIONS) or any(ext + '@' in e for ext in IMAGE_EXTENSIONS):
             continue
             
         parts = e.split('@')

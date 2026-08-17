@@ -1,44 +1,65 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Send Campaign</h1>
-    
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+    <div>
+        <h1 class="text-2xl font-extrabold text-gray-900">Email Campaign Outreach Engine</h1>
+        <p class="text-gray-500 text-sm mt-1">
+            Dispatch personalized business proposals and presentation decks to validated B2B/B2C leads with built-in deduplication.
+        </p>
+    </div>
+
     {% if dry_run %}
-    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
-        <p class="font-bold">Dry Run Mode Enabled</p>
-        <p>Emails will be logged but not sent.</p>
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-xl shadow-sm flex items-center justify-between">
+        <div>
+            <p class="font-bold text-sm">Simulation / Dry Run Mode Active</p>
+            <p class="text-xs text-yellow-700">MIME messages and PDF attachments are verified and logged without sending external live emails.</p>
+        </div>
+        <span class="text-xs bg-yellow-200 text-yellow-900 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Dry Run</span>
     </div>
     {% endif %}
 
-    <form action="/send" method="post" class="space-y-4">
+    <form action="/send" method="post" class="space-y-5">
         <div>
-            <label class="block text-gray-700 font-bold mb-2">Target Audience</label>
-            <select name="audience" class="w-full border p-2 rounded">
-                <option value="business">Business Only</option>
-                <option value="individual">Individual Only</option>
-                <option value="all">All Validated Leads</option>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Target Recipient Audience</label>
+            <select name="audience" class="w-full p-3 border rounded-xl bg-white text-base">
+                <option value="all" selected>All Validated Leads (B2B + B2C)</option>
+                <option value="business">Business Leads Only (B2B Corporate)</option>
+                <option value="individual">Individual Buyers Only (B2C Consumers)</option>
             </select>
         </div>
-        
-        <div>
-            <label class="block text-gray-700 font-bold mb-2">Subject</label>
-            <input type="text" name="subject" value="Premium Singing Bowls for Your Business" class="w-full border p-2 rounded" required>
-        </div>
-        
-        <div>
-            <label class="block text-gray-700 font-bold mb-2">Message Body</label>
-            <textarea name="body" rows="6" class="w-full border p-2 rounded" required>Hello,
 
-We are a leading exporter of authentic Singing Bowls.
-Please find our company presentation attached.
-
-Best regards,
-Sales Team</textarea>
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Email Subject Line</label>
+            <input type="text" name="subject" value="Authentic Export Singing Bowls — Catalog & Company Overview" class="w-full p-3 border rounded-xl text-base" required>
         </div>
-        
-        <div class="pt-4">
-            <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded font-bold hover:bg-green-700 w-full">
-                Dispatch Campaign
+
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Email Proposal Body</label>
+            <textarea name="body" rows="6" class="w-full p-3 border rounded-xl text-sm font-sans" required>Dear Partner,
+
+We are a premier exporter specializing in authentic handcrafted Singing Bowls and wellness artifacts.
+
+Please find our official product catalog and export presentation attached (`demo_presentation.pdf`). We would welcome the opportunity to supply your business.
+
+Warm regards,
+Export Sales & Distribution Team</textarea>
+        </div>
+
+        <!-- Attachment Badge -->
+        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📎</span>
+                <div>
+                    <span class="font-bold text-sm text-gray-900 block">assets/demo_presentation.pdf</span>
+                    <span class="text-xs text-gray-500">MIME Verified PDF Attachment (Auto-Attached to Every Message)</span>
+                </div>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">Included</span>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100">
+            <button type="submit" class="w-full bg-emerald-600 text-white py-4 px-6 rounded-xl font-bold hover:bg-emerald-700 transition shadow">
+                Launch Outreach Campaign
             </button>
         </div>
     </form>

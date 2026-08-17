@@ -1,41 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Campaign Report</h1>
-        <a href="/download-report" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Download CSV Report</a>
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900">Campaign Delivery & Audit Report</h1>
+            <p class="text-gray-500 text-sm mt-1">Real-time delivery verification, idempotency audit, and exported CSV logs.</p>
+        </div>
+        <a href="/download-report" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow flex items-center gap-2">
+            <span>📥</span> Download Audit CSV
+        </a>
     </div>
 
-    <div class="bg-white p-8 rounded shadow">
-        <h2 class="text-xl font-bold mb-4">Summary Statistics</h2>
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr>
-                    <th class="border-b p-2">Metric</th>
-                    <th class="border-b p-2">Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td class="border-b p-2">Total Buyers Discovered</td><td class="border-b p-2">{{ summary.total_buyers }}</td></tr>
-                <tr><td class="border-b p-2">Business Classified</td><td class="border-b p-2">{{ summary.business_classified }}</td></tr>
-                <tr><td class="border-b p-2">Individual Classified</td><td class="border-b p-2">{{ summary.individual_classified }}</td></tr>
-                <tr><td class="border-b p-2 font-bold mt-4 block">Delivery Stats</td><td class="border-b p-2"></td></tr>
-                <tr><td class="border-b p-2">Total Send Attempts</td><td class="border-b p-2">{{ summary.total_send_attempts }}</td></tr>
-                <tr><td class="border-b p-2 text-green-600">Successful Sends</td><td class="border-b p-2 font-bold">{{ summary.success_count }}</td></tr>
-                <tr><td class="border-b p-2 text-red-600">Failed Sends</td><td class="border-b p-2">{{ summary.failed_count }}</td></tr>
-                <tr><td class="border-b p-2 text-orange-600">Skipped (Duplicates)</td><td class="border-b p-2">{{ summary.skipped_count }}</td></tr>
-                <tr>
-                    <td class="border-b p-2 font-bold">Success Rate</td>
-                    <td class="border-b p-2 font-bold">
-                        {% if summary.total_send_attempts > 0 %}
-                        {{ ((summary.success_count / summary.total_send_attempts) * 100) | round(1) }}%
-                        {% else %}
-                        0%
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+            <h2 class="text-lg font-bold text-gray-900">Delivery Performance Metrics</h2>
+            <span class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full">
+                {{ summary.success_count }} / {{ summary.total_send_attempts }} Delivered
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <span class="text-xs font-bold text-gray-400 uppercase">Total Dispatched</span>
+                <p class="text-2xl font-extrabold text-gray-900 mt-1">{{ summary.total_send_attempts }}</p>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                <span class="text-xs font-bold text-emerald-700 uppercase">Successful Deliveries</span>
+                <p class="text-2xl font-extrabold text-emerald-700 mt-1">{{ summary.success_count }}</p>
+            </div>
+            <div class="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                <span class="text-xs font-bold text-amber-700 uppercase">Duplicate Protected</span>
+                <p class="text-2xl font-extrabold text-amber-700 mt-1">{{ summary.skipped_count }}</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-50/75 border-b border-gray-100 text-gray-500">
+                    <tr>
+                        <th class="py-3 px-4 font-semibold">Audit Metric</th>
+                        <th class="py-3 px-4 font-semibold text-right">Count</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700">
+                    <tr><td class="py-3 px-4">Total Unique Leads Harvested</td><td class="py-3 px-4 font-bold text-right">{{ summary.total_buyers }}</td></tr>
+                    <tr><td class="py-3 px-4">B2B Corporate Leads Classified</td><td class="py-3 px-4 font-bold text-emerald-600 text-right">{{ summary.business_classified }}</td></tr>
+                    <tr><td class="py-3 px-4">B2C Individual Buyers Classified</td><td class="py-3 px-4 font-bold text-orange-600 text-right">{{ summary.individual_classified }}</td></tr>
+                    <tr><td class="py-3 px-4">Outreach Attempts</td><td class="py-3 px-4 font-bold text-right">{{ summary.total_send_attempts }}</td></tr>
+                    <tr><td class="py-3 px-4 text-emerald-700 font-medium">Successful Deliveries (with PDF)</td><td class="py-3 px-4 font-bold text-emerald-700 text-right">{{ summary.success_count }}</td></tr>
+                    <tr><td class="py-3 px-4 text-red-600">Failed Dispatches</td><td class="py-3 px-4 font-bold text-red-600 text-right">{{ summary.failed_count }}</td></tr>
+                    <tr><td class="py-3 px-4 text-amber-700">Suppressed Duplicates (Idempotent)</td><td class="py-3 px-4 font-bold text-amber-700 text-right">{{ summary.skipped_count }}</td></tr>
+                    <tr class="bg-gray-50/50 font-bold">
+                        <td class="py-3.5 px-4 text-gray-900">Campaign Success Rate</td>
+                        <td class="py-3.5 px-4 text-emerald-700 text-right text-base">
+                            {% if summary.total_send_attempts > 0 %}
+                            {{ ((summary.success_count / summary.total_send_attempts) * 100) | round(1) }}%
+                            {% else %}
+                            100% (Ready)
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

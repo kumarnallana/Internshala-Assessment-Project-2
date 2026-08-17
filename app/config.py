@@ -11,6 +11,7 @@ DAILY_SEND_LIMIT = int(os.getenv("DAILY_SEND_LIMIT", 100))
 PRESENTATION_PATH = os.getenv("PRESENTATION_PATH", "assets/demo_presentation.pdf")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 DRY_RUN = os.getenv("DRY_RUN", "true").lower() in ("true", "1", "yes")
 

@@ -1,3 +1,6 @@
+import sys
+sys.modules["google._upb._message"] = None
+
 import uvicorn
 from app.logging.activity_logger import init_logs
 from app.config import validate_config

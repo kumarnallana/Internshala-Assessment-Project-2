@@ -11,11 +11,17 @@ def test_end_to_end_happy_path_and_idempotency():
     mock search -> extract -> validate -> deduplicate -> mock Gemini -> audience selection -> mock Gmail -> log -> report
     """
     # Setup temporary files for isolation
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False, newline='') as b_file, \
-         tempfile.NamedTemporaryFile(mode='w+', delete=False, newline='') as sl_file, \
-         tempfile.NamedTemporaryFile(mode='w+', delete=False, newline='') as be_file, \
-         tempfile.NamedTemporaryFile(mode='w+', delete=False, newline='') as ie_file:
-         
+    b_file = tempfile.NamedTemporaryFile(delete=False)
+    sl_file = tempfile.NamedTemporaryFile(delete=False)
+    be_file = tempfile.NamedTemporaryFile(delete=False)
+    ie_file = tempfile.NamedTemporaryFile(delete=False)
+    
+    b_file.close()
+    sl_file.close()
+    be_file.close()
+    ie_file.close()
+
+    try:
         activity_logger.BUYERS_FILE = b_file.name
         activity_logger.SENT_LOG_FILE = sl_file.name
         activity_logger.BUSINESS_EMAILS_FILE = be_file.name
@@ -32,7 +38,7 @@ def test_end_to_end_happy_path_and_idempotency():
         
         # 2. Classification
         classifier = MockClassifier()
-        b_count, i_count = pipeline.run_classification(classifier)
+        b_count, i_count, u_count = pipeline.run_classification(classifier)
         
         assert b_count > 0 or i_count > 0
         
@@ -58,8 +64,8 @@ def test_end_to_end_happy_path_and_idempotency():
         assert s2 == 0
         assert len(skip2) == len(emails) # All skipped as duplicate
         
+    finally:
         # Cleanup
-        os.remove(b_file.name)
-        os.remove(sl_file.name)
-        os.remove(be_file.name)
-        os.remove(ie_file.name)
+        for f in [b_file.name, sl_file.name, be_file.name, ie_file.name]:
+            if os.path.exists(f):
+                os.remove(f)

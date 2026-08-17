@@ -1,21 +1,22 @@
 from typing import List
 from app.search.base import SearchAdapter
+from app.search.live_scraper import search_live_web
 from app.search.fixtures.mock_search import MockSearchAdapter
 import logging
 
 class WebsiteSearchAdapter(SearchAdapter):
-    def __init__(self, use_mock: bool = True):
+    def __init__(self, use_mock: bool = False):
         self.use_mock = use_mock
-        self.mock = MockSearchAdapter("Website")
+        self.mock = MockSearchAdapter("Direct Websites")
 
     def search(self, keyword: str, max_results: int = 10) -> List[dict]:
-        """
-        Adapter implemented.
-        Defaults to mock fallback. Real implementation would involve spidering company domains.
-        """
-        if self.use_mock:
-            logging.info(f"Using Mock fallback for Website Search: {keyword}")
-            return self.mock.search(keyword, max_results)
-            
-        logging.info(f"Executing REAL Website Search for: {keyword}")
-        return []
+        if not self.use_mock:
+            try:
+                logging.info(f"Executing LIVE Website Search for: '{keyword}'")
+                live_results = search_live_web(f"{keyword} contact email procurement", platform="Direct Websites", max_results=max_results)
+                if live_results:
+                    return live_results
+            except Exception as e:
+                logging.warning(f"Live website search failed ({e}). Falling back to fixtures.")
+                
+        return self.mock.search(keyword, max_results)

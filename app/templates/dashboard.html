@@ -1,41 +1,210 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-    
-    {% if dry_run %}
-    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
-        <p class="font-bold">Dry Run Mode Enabled</p>
-        <p>Emails will be logged but not actually sent through Gmail.</p>
+<div class="max-w-6xl mx-auto space-y-8">
+    <!-- Header Banner -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Lead Discovery & Outreach Engine</h1>
+            <p class="text-gray-500 text-sm mt-1">Autonomous B2B/B2C lead harvesting, Gemini classification & automated email delivery.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/report" class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm">
+                View Detailed Report
+            </a>
+            <a href="/download-report" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow">
+                Download CSV Audit
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert / Notice -->
+    {% if msg == 'discovery_complete' %}
+    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg shadow-sm">
+        <p class="text-emerald-800 font-semibold">✓ Discovery Completed Successfully!</p>
+        <p class="text-emerald-600 text-sm">New leads have been harvested from multi-channel search adapters and saved to data/buyers.csv.</p>
+    </div>
+    {% elif msg == 'classification_complete' %}
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
+        <p class="text-blue-800 font-semibold">✓ AI Classification Completed!</p>
+        <p class="text-blue-600 text-sm">Emails have been segmented into Business (B2B) and Individual (B2C) lists.</p>
     </div>
     {% endif %}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-gray-500 text-sm uppercase">Total Buyers Found</h3>
-            <p class="text-3xl font-bold text-blue-600">{{ summary.total_buyers }}</p>
+    {% if dry_run %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg shadow-sm flex items-center justify-between">
+        <div>
+            <p class="font-bold">Dry Run & Simulation Mode Active</p>
+            <p class="text-sm text-yellow-700">MIME emails and PDF presentations are generated and logged safely without connecting to external SMTP.</p>
         </div>
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-gray-500 text-sm uppercase">Business Emails</h3>
-            <p class="text-3xl font-bold text-green-600">{{ summary.business_classified }}</p>
+        <span class="text-xs bg-yellow-200 text-yellow-900 font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Safe Testing</span>
+    </div>
+    {% endif %}
+
+    <!-- 4 KPI Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Total Leads Found</span>
+                <span class="p-2 bg-blue-50 text-blue-600 rounded-lg text-lg">🔍</span>
+            </div>
+            <p class="text-3xl font-extrabold text-gray-900 mt-3">{{ summary.total_buyers }}</p>
+            <span class="text-xs text-gray-400 mt-1 block">Harvested across 5 platforms</span>
         </div>
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-gray-500 text-sm uppercase">Individual Emails</h3>
-            <p class="text-3xl font-bold text-orange-600">{{ summary.individual_classified }}</p>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Business (B2B)</span>
+                <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-lg">🏢</span>
+            </div>
+            <p class="text-3xl font-extrabold text-emerald-600 mt-3">{{ summary.business_classified }}</p>
+            <span class="text-xs text-gray-400 mt-1 block">Corporate & wholesale leads</span>
         </div>
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-gray-500 text-sm uppercase">Total Sent</h3>
-            <p class="text-3xl font-bold text-indigo-600">{{ summary.success_count }}</p>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Individual (B2C)</span>
+                <span class="p-2 bg-orange-50 text-orange-600 rounded-lg text-lg">👤</span>
+            </div>
+            <p class="text-3xl font-extrabold text-orange-600 mt-3">{{ summary.individual_classified }}</p>
+            <span class="text-xs text-gray-400 mt-1 block">Consumer & direct buyers</span>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Outreach Delivered</span>
+                <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg text-lg">✉️</span>
+            </div>
+            <p class="text-3xl font-extrabold text-indigo-600 mt-3">{{ summary.success_count }}</p>
+            <span class="text-xs text-gray-400 mt-1 block">Attached PDF presentations</span>
         </div>
     </div>
-    
-    <div class="bg-white p-6 rounded shadow">
-        <h2 class="text-xl font-bold mb-4">Pipeline Workflow</h2>
-        <div class="flex space-x-4">
-            <a href="/upload" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">1. Discover Leads</a>
-            <a href="/classify" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">2. Classify Emails</a>
-            <a href="/send" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">3. Send Campaign</a>
+
+    <!-- Quick Action Pipeline Triggers -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Pipeline Execution Controls</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form action="/upload" method="post" class="m-0">
+                <button type="submit" class="w-full bg-blue-600 text-white p-4 rounded-xl font-semibold hover:bg-blue-700 transition flex items-center justify-between group shadow-sm">
+                    <div class="text-left">
+                        <span class="text-xs text-blue-200 block uppercase font-bold tracking-wider">Step 1</span>
+                        <span class="text-base font-bold">1. Discover Leads</span>
+                    </div>
+                    <span class="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+            </form>
+
+            <form action="/classify" method="post" class="m-0">
+                <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center justify-between group shadow-sm">
+                    <div class="text-left">
+                        <span class="text-xs text-indigo-200 block uppercase font-bold tracking-wider">Step 2</span>
+                        <span class="text-base font-bold">2. Classify with AI</span>
+                    </div>
+                    <span class="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+            </form>
+
+            <a href="/send" class="w-full bg-emerald-600 text-white p-4 rounded-xl font-semibold hover:bg-emerald-700 transition flex items-center justify-between group shadow-sm">
+                <div class="text-left">
+                    <span class="text-xs text-emerald-200 block uppercase font-bold tracking-wider">Step 3</span>
+                    <span class="text-base font-bold">3. Dispatch Campaign</span>
+                </div>
+                <span class="text-xl group-hover:translate-x-1 transition-transform">→</span>
+            </a>
         </div>
+    </div>
+
+    <!-- Live Discovered Leads Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Harvested Leads & Pipeline Records</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Live records synchronized with local CSV data store (`data/buyers.csv`).</p>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
+                {{ buyers|length }} Record{% if buyers|length != 1 %}s{% endif %} Loaded
+            </span>
+        </div>
+
+        {% if buyers %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-50/75 border-b border-gray-100 text-gray-500">
+                    <tr>
+                        <th class="py-3 px-6 font-semibold">Lead & Company</th>
+                        <th class="py-3 px-6 font-semibold">Email Address</th>
+                        <th class="py-3 px-6 font-semibold">Source Platform</th>
+                        <th class="py-3 px-6 font-semibold">Country</th>
+                        <th class="py-3 px-6 font-semibold">AI Segment</th>
+                        <th class="py-3 px-6 font-semibold">Delivery Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700">
+                    {% for b in buyers %}
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="py-3.5 px-6">
+                            <div class="font-bold text-gray-900">{{ b.company_name }}</div>
+                            <div class="text-xs text-gray-400">{{ b.buyer_name }}</div>
+                        </td>
+                        <td class="py-3.5 px-6 font-mono text-xs text-blue-600">
+                            {{ b.email }}
+                        </td>
+                        <td class="py-3.5 px-6">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {{ b.source_platform }}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-6 text-gray-500">
+                            {{ b.country }}
+                        </td>
+                        <td class="py-3.5 px-6">
+                            {% if b.category == 'Business' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                B2B Business
+                            </span>
+                            {% elif b.category == 'Individual' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-800">
+                                B2C Individual
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                Pending AI
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-6">
+                            {% if b.status == 'sent' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
+                                ✓ Dispatched
+                            </span>
+                            {% elif b.status == 'skipped_duplicate' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                Duplicate (Skipped)
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                Ready for Campaign
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-12 text-center">
+            <div class="text-4xl mb-3">📂</div>
+            <h4 class="text-base font-bold text-gray-900">No Leads Harvested Yet</h4>
+            <p class="text-sm text-gray-500 max-w-md mx-auto mt-1 mb-6">
+                Click "1. Discover Leads" to run the search adapters and harvest buyer prospects into your local data store.
+            </p>
+            <form action="/upload" method="post" class="inline-block">
+                <button type="submit" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition shadow">
+                    Run Lead Discovery Pipeline
+                </button>
+            </form>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

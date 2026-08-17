@@ -8,4 +8,4 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/settings", response_class=HTMLResponse)
 def settings_page(request: Request):
-    return templates.TemplateResponse("settings.html", {"request": request, "email": GMAIL_EMAIL, "dry_run": DRY_RUN})
+    return templates.TemplateResponse(request, "settings.html", {"request": request, "email": GMAIL_EMAIL, "dry_run": DRY_RUN})

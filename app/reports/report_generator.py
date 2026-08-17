@@ -1,6 +1,6 @@
 import csv
 import io
-from app.logging.activity_logger import BUYERS_FILE, SENT_LOG_FILE, BUSINESS_EMAILS_FILE, INDIVIDUAL_EMAILS_FILE
+from app.logging import activity_logger
 
 def get_line_count(filepath: str) -> int:
     try:
@@ -10,18 +10,23 @@ def get_line_count(filepath: str) -> int:
         return 0
 
 def generate_summary_report() -> dict:
-    buyers_count = max(0, get_line_count(BUYERS_FILE) - 1) # minus header
-    business_count = get_line_count(BUSINESS_EMAILS_FILE)
-    individual_count = get_line_count(INDIVIDUAL_EMAILS_FILE)
+    buyers_count = max(0, get_line_count(activity_logger.BUYERS_FILE) - 1) # minus header
+    business_count = max(0, get_line_count(activity_logger.BUSINESS_EMAILS_FILE) - 1)
+    individual_count = max(0, get_line_count(activity_logger.INDIVIDUAL_EMAILS_FILE) - 1)
     
-    sent_log_count = max(0, get_line_count(SENT_LOG_FILE) - 1)
+    try:
+        unknown_count = max(0, get_line_count(activity_logger.UNKNOWN_EMAILS_FILE) - 1)
+    except Exception:
+        unknown_count = 0
+    
+    sent_log_count = max(0, get_line_count(activity_logger.SENT_LOG_FILE) - 1)
     
     success_count = 0
     failed_count = 0
     skipped_count = 0
     
     try:
-        with open(SENT_LOG_FILE, 'r', encoding='utf-8') as f:
+        with open(activity_logger.SENT_LOG_FILE, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 st = row.get("status", "")
@@ -38,6 +43,7 @@ def generate_summary_report() -> dict:
         "total_buyers": buyers_count,
         "business_classified": business_count,
         "individual_classified": individual_count,
+        "unknown_classified": unknown_count,
         "total_send_attempts": success_count + failed_count + skipped_count,
         "success_count": success_count,
         "failed_count": failed_count,
@@ -56,7 +62,7 @@ def generate_csv_report() -> str:
     writer.writerow(["Email", "Status", "Timestamp"])
     
     try:
-        with open(SENT_LOG_FILE, 'r', encoding='utf-8') as f:
+        with open(activity_logger.SENT_LOG_FILE, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader, None) # skip header
             for row in reader:

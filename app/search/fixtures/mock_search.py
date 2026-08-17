@@ -9,15 +9,23 @@ class MockSearchAdapter(SearchAdapter):
         # Deterministic sample fixtures
         return [
             {
-                "raw_text": f"We sell {keyword}. Contact: business@singingbowls-demo.com",
-                "buyer_name": "John Doe",
-                "company_name": "Demo Bowls Inc",
-                "website": "singingbowls-demo.com",
-                "country": "USA",
+                "raw_text": f"Global Wholesale {keyword} Exporter. Inquiries: sales.business@singingbowls-global.com or info@exportbowls.com",
+                "buyer_name": "International Trade Co",
+                "company_name": "Global Singing Bowls Ltd",
+                "website": "singingbowls-global.com",
+                "country": "Germany",
                 "source_platform": self.platform_name
             },
             {
-                "raw_text": "Looking to buy. My email is individual.buyer@example.com",
+                "raw_text": f"Looking for bulk order {keyword}. Please reach out to sasikumarnallana956@gmail.com",
+                "buyer_name": "Sasi Kumar",
+                "company_name": "Kumar Imports",
+                "website": "kumar-imports.com",
+                "country": "India",
+                "source_platform": self.platform_name
+            },
+            {
+                "raw_text": "Independent buyer looking for authentic bowls: individual.buyer@craftmarkets.org",
                 "buyer_name": "Jane Smith",
                 "company_name": "",
                 "website": "",
@@ -25,19 +33,11 @@ class MockSearchAdapter(SearchAdapter):
                 "source_platform": self.platform_name
             },
             {
-                "raw_text": "Invalid placeholder: noreply@example.com",
+                "raw_text": "Automated system test: noreply@placeholder.com",
                 "buyer_name": "Placeholder Corp",
                 "company_name": "Placeholder Corp",
-                "website": "example.com",
+                "website": "placeholder.com",
                 "country": "Canada",
-                "source_platform": self.platform_name
-            },
-            {
-                "raw_text": "No email included here.",
-                "buyer_name": "No Email LLC",
-                "company_name": "No Email LLC",
-                "website": "",
-                "country": "Australia",
                 "source_platform": self.platform_name
             }
         ]

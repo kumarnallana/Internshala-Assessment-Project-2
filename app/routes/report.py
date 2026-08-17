@@ -9,4 +9,4 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/report", response_class=HTMLResponse)
 def report_page(request: Request):
     summary = generate_summary_report()
-    return templates.TemplateResponse("report.html", {"request": request, "summary": summary})
+    return templates.TemplateResponse(request, "report.html", {"request": request, "summary": summary})

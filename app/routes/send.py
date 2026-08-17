@@ -10,7 +10,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/send", response_class=HTMLResponse)
 def send_page(request: Request):
-    return templates.TemplateResponse("send.html", {"request": request, "dry_run": DRY_RUN})
+    return templates.TemplateResponse(request, "send.html", {"request": request, "dry_run": DRY_RUN})
 
 @router.post("/send")
 def run_send(audience: str = Form(...), subject: str = Form(...), body: str = Form(...)):
@@ -28,11 +28,10 @@ def run_send(audience: str = Form(...), subject: str = Form(...), body: str = Fo
         try:
             with open(f, 'r', encoding='utf-8') as fh:
                 reader = csv.reader(fh)
-                if f == "data/buyers.csv":
-                    next(reader, None)
+                next(reader, None)  # Skip header row in any CSV
                 for row in reader:
                     if row and row[0]:
-                        emails.append(row[0])
+                        emails.append(row[0].strip())
         except FileNotFoundError:
             pass
             
